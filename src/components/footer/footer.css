@@ -1,0 +1,27 @@
+.footer {
+    background-color: #ffe6e6; /* Light Pink */
+    padding: 20px 0;
+    text-align: center;
+  }
+  
+  .social-icons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .social-icons img {
+    width: 50px; /* Adjust the size as needed */
+    height: 50px; /* Adjust the size as needed */
+    border-radius: 50%;
+    transition: transform 0.2s ease-in-out;
+  
+    /* Add hover effect */
+    cursor: pointer;
+  }
+  
+  .social-icons img:hover {
+    transform: scale(1.1);
+  }
+  
