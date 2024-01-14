@@ -10,7 +10,6 @@ const App = () => {
     <div className="app-container">
         <Navbar />
         <CardDisplay onAddToCart={Cart.addToCart} />
-        <Cart />
         <Contact />
         <Footer />
       </div>

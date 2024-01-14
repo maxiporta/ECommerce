@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const multer = require('multer');
 
 // Modelos
 const Producto = require('./src/models/product/productModel');
@@ -10,12 +11,25 @@ const app = express();
 
 app.use(express.json())
 app.use(cors());
+app.use('/uploads', express.static('uploads'));
 
 // Conectar a MongoDB
 mongoose.connect('mongodb://localhost:27017/nombre-de-tu-base-de-datos', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
+
+// Multer Configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads'); // Specify the destination folder
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); // Define the filename
+  }
+});
+
+const upload = multer({ storage: storage }); // Use upload middleware after defining it
 
 // Usuarios
 app.get('/usuarios', async (req, res) => {
@@ -61,11 +75,14 @@ app.get('/productos', async (req, res) => {
   }
 });
 
-app.post('/productos', async (req, res) => {
+app.post('/productos', upload.single('imagen'), async (req, res) => {
   try {
-    const { nombre, imagen, descripcion } = req.body;
-    const nuevoProducto = new Producto({ nombre, imagen, descripcion });
+    const { nombre, descripcion, precio } = req.body;
+    const imagen = req.file ? req.file.path : null;
+
+    const nuevoProducto = new Producto({ nombre, imagen, descripcion, precio });
     await nuevoProducto.save();
+
     res.status(201).json(nuevoProducto); // 201 significa "Creado"
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -118,7 +135,7 @@ app.post('/carrito/agregar', async (req, res) => {
       return res.status(404).json({ mensaje: 'Producto no encontrado' });
     }
 
-    // Agregar producto al carrito del usuario (esto también puede variar según tu lógica de negocio)
+    // Agregar producto al carrito del usuario
     usuario.carrito.push(producto);
     await usuario.save();
 

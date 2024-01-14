@@ -5,10 +5,14 @@ import { BrowserRouter as Router, Link } from 'react-router-dom';
 const Navbar = () => {
   return (
     <Router>
-      <nav className="navbar navbar-expand-lg bg-light">
+      <nav className="navbar navbar-expand-lg bg-light sticky-top">
         <div className="container-fluid">
-          <Link className="navbar-brand" to="/">
-            Navbar
+          <Link to="/">
+            <img
+              src={process.env.PUBLIC_URL + '/random-logo.png'} // Replace with the actual path to your logo image
+              alt="Navbar Logo"
+              className="navbar-logo"
+            />
           </Link>
           <button
             className="navbar-toggler"
@@ -24,20 +28,14 @@ const Navbar = () => {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0 justify-content-between">
               <NavItem to="/" label="Home" />
-              <NavItem to="/link" label="Link" />
+              <NavItem to="/contact" label="Contacto" />
               <NavItemDropdown label="Dropdown">
                 <DropdownItem to="/action" label="Action" />
                 <DropdownItem to="/another-action" label="Another action" />
                 <DropdownItem to="/something-else" label="Something else here" />
               </NavItemDropdown>
-              <NavItem to="#" label="Disabled" disabled />
             </ul>
-            <form className="d-flex" role="search">
-              <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-              <button className="btn btn-outline-success" type="submit">
-                Search
-              </button>
-            </form>
+            {/* Add a cart icon here (to be implemented later) */}
           </div>
         </div>
       </nav>
@@ -45,7 +43,6 @@ const Navbar = () => {
   );
 };
 
-// Reusable component for a regular navigation item
 const NavItem = ({ to, label, disabled }) => (
   <li className="nav-item">
     <Link className={`nav-link ${disabled ? 'disabled' : ''}`} to={to} aria-disabled={disabled}>
@@ -54,7 +51,6 @@ const NavItem = ({ to, label, disabled }) => (
   </li>
 );
 
-// Reusable component for a dropdown navigation item
 const NavItemDropdown = ({ label, children }) => (
   <li className="nav-item dropdown">
     <Link className="nav-link dropdown-toggle" to="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -64,7 +60,6 @@ const NavItemDropdown = ({ label, children }) => (
   </li>
 );
 
-// Reusable component for a dropdown item
 const DropdownItem = ({ to, label }) => (
   <li>
     <Link className="dropdown-item" to={to}>
