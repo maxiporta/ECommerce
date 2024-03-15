@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import './productCard.css';
 
-const ProductCard = ({ producto, onAddToCart, showPriceOnHover, enlargeOnHover, isCenter }) => {
+const ProductCard = ({ producto, showPriceOnHover, isCenter }) => {
   const { _id, nombre, imagen, descripcion, precio } = producto;
   const imagenPath = `http://localhost:5000/${imagen}`;
   const [hovered, setHovered] = useState(false);
 
   return (
     <div
-      className={`product-card ${isCenter ? 'center-product' : ''} ${hovered ? 'enlarged' : ''}`}
-      onMouseEnter={() => setHovered(true)}
+    className={`product-card ${isCenter ? 'center-product' : ''} ${hovered ? 'enlarged' : ''}`}
+    onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <img src={imagenPath} alt={nombre} className="product-image" />

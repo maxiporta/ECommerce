@@ -58,7 +58,6 @@ const CardDisplay = () => {
             ))}
           </div>
         </Carousel.Item>
-        {/* Add more Carousel.Items as needed */}
       </Carousel>
     </div>
   );

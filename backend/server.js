@@ -2,16 +2,17 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const multer = require('multer');
+const path = require('path');
 
 // Modelos
-const Producto = require('./src/models/product/productModel');
-const Usuario = require('./src/models/user/userModel');
+const Producto = require('./models/product/productModel');
+const Usuario = require('./models/user/userModel');
 
 const app = express();
 
 app.use(express.json())
 app.use(cors());
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Conectar a MongoDB
 mongoose.connect('mongodb://localhost:27017/nombre-de-tu-base-de-datos', {
@@ -118,53 +119,53 @@ app.delete('/productos/:id', async (req, res) => {
 
 
 
-// Ruta para agregar producto al carrito
-app.post('/carrito/agregar', async (req, res) => {
-  try {
-    const { productId, userId } = req.body;
+// // Ruta para agregar producto al carrito
+// app.post('/carrito/agregar', async (req, res) => {
+//   try {
+//     const { productId, userId } = req.body;
     
-    // Verificar si el usuario existe (esto puede variar según tu lógica de autenticación)
-    const usuario = await Usuario.findById(userId);
-    if (!usuario) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
-    }
+//     // Verificar si el usuario existe
+//     const usuario = await Usuario.findById(userId);
+//     if (!usuario) {
+//       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+//     }
 
-    // Verificar si el producto existe
-    const producto = await Producto.findById(productId);
-    if (!producto) {
-      return res.status(404).json({ mensaje: 'Producto no encontrado' });
-    }
+//     // Verificar si el producto existe
+//     const producto = await Producto.findById(productId);
+//     if (!producto) {
+//       return res.status(404).json({ mensaje: 'Producto no encontrado' });
+//     }
 
-    // Agregar producto al carrito del usuario
-    usuario.carrito.push(producto);
-    await usuario.save();
+//     // Agregar producto al carrito del usuario
+//     usuario.carrito.push(producto);
+//     await usuario.save();
 
-    res.status(200).json({ mensaje: 'Producto agregado al carrito correctamente' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+//     res.status(200).json({ mensaje: 'Producto agregado al carrito correctamente' });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
-// Ruta para eliminar producto del carrito
-app.post('/carrito/eliminar', async (req, res) => {
-  try {
-    const { productId, userId } = req.body;
+// // Ruta para eliminar producto del carrito
+// app.post('/carrito/eliminar', async (req, res) => {
+//   try {
+//     const { productId, userId } = req.body;
 
-    // Verificar si el usuario existe
-    const usuario = await Usuario.findById(userId);
-    if (!usuario) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
-    }
+//     // Verificar si el usuario existe
+//     const usuario = await Usuario.findById(userId);
+//     if (!usuario) {
+//       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+//     }
 
-    // Eliminar producto del carrito del usuario (esto también puede variar según tu lógica de negocio)
-    usuario.carrito = usuario.carrito.filter(producto => producto.toString() !== productId);
-    await usuario.save();
+//     // Eliminar producto del carrito del usuario (esto también puede variar según tu lógica de negocio)
+//     usuario.carrito = usuario.carrito.filter(producto => producto.toString() !== productId);
+//     await usuario.save();
 
-    res.status(200).json({ mensaje: 'Producto eliminado del carrito correctamente' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+//     res.status(200).json({ mensaje: 'Producto eliminado del carrito correctamente' });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 // Iniciar el servidor
 const puerto = 5000;
