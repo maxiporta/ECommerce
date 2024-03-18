@@ -1,6 +1,7 @@
 import React from 'react';
 import './navbar.css';
 import { Link } from 'react-router-dom';
+import Cart from '../cart/cart';
 
 const Navbar = () => {
     return (
@@ -71,7 +72,8 @@ const CartIcon = () => {
 
     return (
         <Link to="/cart" className="nav-link">
-            <img src={cartIconPath} alt="Cart Icon" className="cart-icon" />
+            <img  onClick={()=>window.open(Cart, 'rel=noopener noreferrer')}
+            src={cartIconPath} alt="Cart Icon" className="cart-icon" />
         </Link>
     );
 };

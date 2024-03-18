@@ -6,7 +6,7 @@ const path = require('path');
 
 // Modelos
 const Producto = require('./models/product/productModel');
-const Usuario = require('./models/user/userModel');
+//const Usuario = require('./models/user/userModel');
 
 const app = express();
 
@@ -32,39 +32,39 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }); // Use upload middleware after defining it
 
-// Usuarios
-app.get('/usuarios', async (req, res) => {
-  try {
-    const usuarios = await Usuario.find();
-    res.json(usuarios);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// // Usuarios
+// app.get('/usuarios', async (req, res) => {
+//   try {
+//     const usuarios = await Usuario.find();
+//     res.json(usuarios);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
-app.post('/usuarios', async (req, res) => {
-  try {
-    const { nombre, email } = req.body;
-    const nuevoUsuario = new Usuario({ nombre, email });
-    await nuevoUsuario.save();
-    res.status(201).json(nuevoUsuario); // 201 significa "Creado"
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// app.post('/usuarios', async (req, res) => {
+//   try {
+//     const { nombre, email } = req.body;
+//     const nuevoUsuario = new Usuario({ nombre, email });
+//     await nuevoUsuario.save();
+//     res.status(201).json(nuevoUsuario); // 201 significa "Creado"
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
-app.delete('/usuarios/:id', async (req, res) => {
-  try {
-    const usuarioEliminado = await Usuario.findByIdAndDelete(req.params.id);
-    if (usuarioEliminado) {
-      res.json({ mensaje: 'Usuario eliminado correctamente' });
-    } else {
-      res.status(404).json({ mensaje: 'Usuario no encontrado' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// app.delete('/usuarios/:id', async (req, res) => {
+//   try {
+//     const usuarioEliminado = await Usuario.findByIdAndDelete(req.params.id);
+//     if (usuarioEliminado) {
+//       res.json({ mensaje: 'Usuario eliminado correctamente' });
+//     } else {
+//       res.status(404).json({ mensaje: 'Usuario no encontrado' });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 // Productos
 app.get('/productos', async (req, res) => {
@@ -79,12 +79,12 @@ app.get('/productos', async (req, res) => {
 app.post('/productos', upload.single('imagen'), async (req, res) => {
   try {
     const { nombre, descripcion, precio } = req.body;
-    const imagen = req.file ? req.file.path : null;
+    const imagen = req.file ? req.file.filename : null;
 
     const nuevoProducto = new Producto({ nombre, imagen, descripcion, precio });
     await nuevoProducto.save();
 
-    res.status(201).json(nuevoProducto); // 201 significa "Creado"
+    res.status(201).json(nuevoProducto);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -117,55 +117,28 @@ app.delete('/productos/:id', async (req, res) => {
   }
 });
 
+// Carrito
 
+// ver la información
+app.get('/carrito', (req, res) => {
+  res.sendFile(path.join(__dirname, 'path_to_your_cart_page.html'));
+});
 
-// // Ruta para agregar producto al carrito
-// app.post('/carrito/agregar', async (req, res) => {
-//   try {
-//     const { productId, userId } = req.body;
-    
-//     // Verificar si el usuario existe
-//     const usuario = await Usuario.findById(userId);
-//     if (!usuario) {
-//       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
-//     }
+// agregar producto
+app.post('/carrito/agregar', async (req, res) => {
+  try {
+    const { productId} = req.body;
 
-//     // Verificar si el producto existe
-//     const producto = await Producto.findById(productId);
-//     if (!producto) {
-//       return res.status(404).json({ mensaje: 'Producto no encontrado' });
-//     }
-
-//     // Agregar producto al carrito del usuario
-//     usuario.carrito.push(producto);
-//     await usuario.save();
-
-//     res.status(200).json({ mensaje: 'Producto agregado al carrito correctamente' });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// // Ruta para eliminar producto del carrito
-// app.post('/carrito/eliminar', async (req, res) => {
-//   try {
-//     const { productId, userId } = req.body;
-
-//     // Verificar si el usuario existe
-//     const usuario = await Usuario.findById(userId);
-//     if (!usuario) {
-//       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
-//     }
-
-//     // Eliminar producto del carrito del usuario (esto también puede variar según tu lógica de negocio)
-//     usuario.carrito = usuario.carrito.filter(producto => producto.toString() !== productId);
-//     await usuario.save();
-
-//     res.status(200).json({ mensaje: 'Producto eliminado del carrito correctamente' });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
+    // verificar si el producto existe
+    const producto = await Producto.findById(productId);
+    if (!producto) {
+      return res.status(404).json({ mensaje: 'Producto no encontrado' });
+    }
+    res.status(200).json({ mensaje: 'Producto agregado al carrito correctamente' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Iniciar el servidor
 const puerto = 5000;
