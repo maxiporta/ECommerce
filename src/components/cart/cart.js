@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
-import CartDisplay from './cartDisplay/cartDisplay';
+import React from 'react';
 
 const Cart = () => {
-  const [carrito, setCarrito] = useState([]);
-
-  const addToCart = (producto) => {
-    setCarrito([...carrito, producto]);
-  };
-
-  const removeFromCart = (producto) => {
-    const nuevoCarrito = carrito.filter(item => item._id !== producto._id);
-    setCarrito(nuevoCarrito);
-  };
-
-  return <CartDisplay carrito={carrito} onRemoveFromCart={removeFromCart} />;
+  return (
+    <div className="cart">
+      <h2>Shopping Cart</h2>
+      <div className="cart-items">
+        {/* items */}
+      </div>
+      <div className="cart-buttons">
+        <button>Cancel Purchase</button>
+        <button>Go to Payment Methods</button>
+      </div>
+    </div>
+  );
 }
 
 export default Cart;
