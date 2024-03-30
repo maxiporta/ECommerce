@@ -140,6 +140,18 @@ app.post('/carrito/agregar', async (req, res) => {
   }
 });
 
+app.get('/product/:id', async (req, res) => {
+  try {
+    const producto = await Producto.findById(req.params.id);
+    if (!producto) {
+      return res.status(404).json({ mensaje: 'Producto no encontrado' });
+    }
+    res.json(producto);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Iniciar el servidor
 const puerto = 5000;
 app.listen(puerto, () => {

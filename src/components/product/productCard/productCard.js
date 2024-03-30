@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // Importa Link
 import './productCard.css';
 
 const ProductCard = ({ producto, showPriceOnHover, isCenter }) => {
   const { _id, nombre, imagen, descripcion, precio } = producto;
   const imagenPath = `http://localhost:5000/${imagen}`;
   const [hovered, setHovered] = useState(false);
-
+  debugger;
   return (
     <div
-    className={`product-card ${isCenter ? 'center-product' : ''} ${hovered ? 'enlarged' : ''}`}
-    onMouseEnter={() => setHovered(true)}
+      className={`product-card ${isCenter ? 'center-product' : ''} ${hovered ? 'enlarged' : ''}`}
+      onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <img src={imagenPath} alt={nombre} className="product-image" />
-      <h2 className="product-title">{nombre}</h2>
-      <div className="product-details">
-        <p className="product-description">{descripcion}</p>
-        {showPriceOnHover && hovered && <p className="product-price">${precio}</p>}
-      </div>
+      <Link to={`/product/${_id}`} className="product-link"> {/* Agrega el Link con la URL correcta */}
+        <img src={imagenPath} alt={nombre} className="product-image" />
+        <h2 className="product-title">{nombre}</h2>
+        <div className="product-details">
+          <p className="product-description">{descripcion}</p>
+          {showPriceOnHover && hovered && <p className="product-price">${precio}</p>}
+        </div>
+      </Link>
     </div>
   );
 }

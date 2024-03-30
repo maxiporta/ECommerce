@@ -17,9 +17,7 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add your logic here to handle form submission (e.g., send data to backend, display a success message, etc.)
     console.log('Form submitted:', formData);
-    // You can reset the form fields after submission if needed
     setFormData({
       name: '',
       email: '',
