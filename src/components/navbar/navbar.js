@@ -70,11 +70,9 @@ const CartIcon = () => {
     const cartIconPath = process.env.PUBLIC_URL + '/cart-icon.png';
 
     return (
-        <Link to="/cart" className="nav-link">
-            <a href="/">
+            <Link to="/cart" label="cart">
                 <img src={cartIconPath} alt="Cart Icon" className="cart-icon" />
-            </a>
-        </Link>
+            </Link>
     );
 };
 
