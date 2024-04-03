@@ -1,38 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getCart } from '../cart/cartFunctions';
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
 
-  const handleRemoveFromCart = (productId) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== productId));
-  };
-
-  const handleCancelPurchase = () => {
-    setCartItems([]);
-  };
-
-  const handleFinishPurchase = () => {
-    alert('Compra finalizada');
-    setCartItems([]);
-  };
-
-  console.log('Cart items:', cartItems);
+  useEffect(() => {
+    const items = getCart();
+    setCartItems(items);
+  }, []);
 
   return (
     <div className="cart">
       <h2>Shopping Cart</h2>
       <div className="cart-items">
         {cartItems.map((item) => (
-          <div key={item.id} className="cart-item">
-            <h3>{item.name}</h3>
-            <p>Price: ${item.price}</p>
-            <button onClick={() => handleRemoveFromCart(item.id)}>Remove</button>
+          <div key={item._id} className="cart-item">
+            <h3>{item.nombre}</h3>
+            <p>Price: ${item.precio}</p>
           </div>
         ))}
-      </div>
-      <div className="cart-buttons">
-        <button onClick={handleCancelPurchase}>Cancel Purchase</button>
-        <button onClick={handleFinishPurchase}>Go to Payment Methods</button>
       </div>
     </div>
   );
