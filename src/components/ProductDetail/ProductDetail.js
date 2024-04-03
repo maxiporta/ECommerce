@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { addToCart, getCart } from '../cart/cartFunctions';
+import { addToCart } from '../cart/cartFunctions';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -23,8 +23,6 @@ const ProductDetail = () => {
   const handleAddToCart = () => {
     if (product) {
       addToCart(product);
-      console.log('Producto agregado al carrito:', product);
-      console.log('Carrito actualizado:', getCart());
     }
   };
 
