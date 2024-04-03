@@ -10,13 +10,13 @@ const ProductDetail = () => {
     const getProductById = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/product/${id}`);
-        debugger;
+        console.log(response)
         setProduct(response.data);
       } catch (error) {
         console.error('Error fetching product:', error);
       }
     };
-
+    
     getProductById();
   }, [id]);
 
@@ -27,7 +27,7 @@ const ProductDetail = () => {
   return (
     <div className="product-detail">
       <h2>{product.nombre}</h2>
-      <img src={`http://localhost:5000/${product.imagen}`} alt={product.nombre} />
+      <img src={`http://localhost:5000/uploads/${product.imagen}`} alt={product.nombre} />
       <p>{product.descripcion}</p>
       <p>Precio: ${product.precio}</p>
     </div>

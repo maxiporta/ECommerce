@@ -6,7 +6,7 @@ const path = require('path');
 
 // Modelos
 const Producto = require('./models/product/productModel');
-//const Usuario = require('./models/user/userModel');
+const Categoria = require('./models/categories/categoryModel');
 
 const app = express();
 
@@ -23,48 +23,14 @@ mongoose.connect('mongodb://localhost:27017/nombre-de-tu-base-de-datos', {
 // Multer Configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './uploads'); // Specify the destination folder
+    cb(null, './uploads');
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname); // Define the filename
+    cb(null, file.originalname);
   }
 });
 
-const upload = multer({ storage: storage }); // Use upload middleware after defining it
-
-// // Usuarios
-// app.get('/usuarios', async (req, res) => {
-//   try {
-//     const usuarios = await Usuario.find();
-//     res.json(usuarios);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// app.post('/usuarios', async (req, res) => {
-//   try {
-//     const { nombre, email } = req.body;
-//     const nuevoUsuario = new Usuario({ nombre, email });
-//     await nuevoUsuario.save();
-//     res.status(201).json(nuevoUsuario); // 201 significa "Creado"
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// app.delete('/usuarios/:id', async (req, res) => {
-//   try {
-//     const usuarioEliminado = await Usuario.findByIdAndDelete(req.params.id);
-//     if (usuarioEliminado) {
-//       res.json({ mensaje: 'Usuario eliminado correctamente' });
-//     } else {
-//       res.status(404).json({ mensaje: 'Usuario no encontrado' });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
+const upload = multer({ storage: storage });
 
 // Productos
 app.get('/productos', async (req, res) => {
@@ -76,12 +42,32 @@ app.get('/productos', async (req, res) => {
   }
 });
 
+app.get('/product/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const producto = await Producto.findById(id);
+    if (!producto) {
+      return res.status(404).json({ mensaje: 'Producto no encontrado' });
+    }
+    res.json(producto);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 app.post('/productos', upload.single('imagen'), async (req, res) => {
   try {
-    const { nombre, descripcion, precio } = req.body;
+    const { nombre, descripcion, precio, categoria } = req.body;
     const imagen = req.file ? req.file.filename : null;
 
-    const nuevoProducto = new Producto({ nombre, imagen, descripcion, precio });
+    
+    const categoriaExiste = await Categoria.findOne({ nombre: categoria });
+    if (!categoriaExiste) {
+      return res.status(400).json({ error: 'CATEGORIA NO ENCONTRADA' });
+    }
+
+    const nuevoProducto = new Producto({ nombre, imagen, descripcion, precio, categoria: categoriaExiste._id });
     await nuevoProducto.save();
 
     res.status(201).json(nuevoProducto);
@@ -92,11 +78,17 @@ app.post('/productos', upload.single('imagen'), async (req, res) => {
 
 app.put('/productos/:id', async (req, res) => {
   try {
-    const { nombre, imagen, descripcion, precio } = req.body;
+    const { nombre, imagen, descripcion, precio, categoria } = req.body;
+
+    const categoriaExistente = await Categoria.findOne({ nombre: categoria });
+    if (!categoriaExistente) {
+      return res.status(400).json({ error: 'CATEGORIA NO ENCONTRADA' });
+    }
+
     const productoModificado = await Producto.findOneAndUpdate(
       { _id: req.params.id },
-      { nombre, imagen, descripcion, precio },
-      { new: true } // Para devolver el documento modificado
+      { nombre, imagen, descripcion, precio, categoria: categoriaExistente._id },
+      { new: true }
     );
     res.json(productoModificado);
   } catch (error) {
@@ -117,36 +109,41 @@ app.delete('/productos/:id', async (req, res) => {
   }
 });
 
-// Carrito
-
-// ver la información
-app.get('/carrito', (req, res) => {
-  res.sendFile(path.join(__dirname, 'path_to_your_cart_page.html'));
-});
-
-// agregar producto
-app.post('/carrito/agregar', async (req, res) => {
+// Categorias
+app.post('/categorias', async (req, res) => {
   try {
-    const { productId} = req.body;
-
-    // verificar si el producto existe
-    const producto = await Producto.findById(productId);
-    if (!producto) {
-      return res.status(404).json({ mensaje: 'Producto no encontrado' });
-    }
-    res.status(200).json({ mensaje: 'Producto agregado al carrito correctamente' });
+    const { nombre } = req.body;
+    const nuevaCategoria = new Categoria({ nombre });
+    await nuevaCategoria.save();
+    res.status(201).json(nuevaCategoria);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.get('/product/:id', async (req, res) => {
+app.get('/categorias', async (req, res) => {
   try {
-    const producto = await Producto.findById(req.params.id);
-    if (!producto) {
-      return res.status(404).json({ mensaje: 'Producto no encontrado' });
-    }
-    res.json(producto);
+    const categorias = await Categoria.find().sort({ nombre: 1 });
+    res.json(categorias);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/categorias/:id', async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    const categoriaActualizada = await Categoria.findByIdAndUpdate(req.params.id, { nombre }, { new: true });
+    res.json(categoriaActualizada);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/categorias/:id', async (req, res) => {
+  try {
+    await Categoria.findByIdAndDelete(req.params.id);
+    res.json({ mensaje: 'Categoría eliminada correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

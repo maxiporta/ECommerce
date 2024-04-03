@@ -4,16 +4,15 @@ import './productCard.css';
 
 const ProductCard = ({ producto, showPriceOnHover, isCenter }) => {
   const { _id, nombre, imagen, descripcion, precio } = producto;
-  const imagenPath = `http://localhost:5000/${imagen}`;
+  const imagenPath = `http://localhost:5000/uploads/${imagen}`;
   const [hovered, setHovered] = useState(false);
-  debugger;
   return (
     <div
       className={`product-card ${isCenter ? 'center-product' : ''} ${hovered ? 'enlarged' : ''}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Link to={`/product/${_id}`} className="product-link"> {/* Agrega el Link con la URL correcta */}
+      <Link to={`/product/${_id}`} className="product-link">
         <img src={imagenPath} alt={nombre} className="product-image" />
         <h2 className="product-title">{nombre}</h2>
         <div className="product-details">
