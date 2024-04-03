@@ -10,7 +10,6 @@ const ProductDetail = () => {
     const getProductById = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/product/${id}`);
-        console.log(response)
         setProduct(response.data);
       } catch (error) {
         console.error('Error fetching product:', error);
@@ -19,6 +18,11 @@ const ProductDetail = () => {
     
     getProductById();
   }, [id]);
+
+  const handleAddToCart = () => {
+    // Aquí puedes implementar la lógica para agregar el producto al carrito
+    console.log('Producto agregado al carrito:', product);
+  };
 
   if (!product) {
     return <div>Loading...</div>;
@@ -30,8 +34,9 @@ const ProductDetail = () => {
       <img src={`http://localhost:5000/uploads/${product.imagen}`} alt={product.nombre} />
       <p>{product.descripcion}</p>
       <p>Precio: ${product.precio}</p>
+      <button onClick={handleAddToCart}>Agregar al carrito</button>
     </div>
   );
-}
+};
 
 export default ProductDetail;

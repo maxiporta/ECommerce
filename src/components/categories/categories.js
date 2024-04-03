@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import ProductCard from '../product/productCard/productCard'; // Importa la componente ProductCard
 
 const Categories = () => {
   const { categoryName } = useParams();
@@ -40,12 +41,7 @@ const Categories = () => {
       <h2>Productos de la categoría {categoryName}</h2>
       <div className="products">
         {filteredProducts.map((product) => (
-          <div key={product._id} className="product">
-            <h3>{product.nombre}</h3>
-            <img src={`http://localhost:5000/uploads/${product.imagen}`} alt={product.nombre} />
-            <p>{product.descripcion}</p>
-            <p>Precio: ${product.precio}</p>
-          </div>
+          <ProductCard key={product._id} producto={product} />
         ))}
       </div>
     </div>
