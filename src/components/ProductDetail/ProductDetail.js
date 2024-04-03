@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { addToCart, getCart } from '../cart/cartFunctions';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -20,8 +21,11 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleAddToCart = () => {
-    // Aquí puedes implementar la lógica para agregar el producto al carrito
-    console.log('Producto agregado al carrito:', product);
+    if (product) {
+      addToCart(product);
+      console.log('Producto agregado al carrito:', product);
+      console.log('Carrito actualizado:', getCart());
+    }
   };
 
   if (!product) {

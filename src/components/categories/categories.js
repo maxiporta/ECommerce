@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import ProductCard from '../product/productCard/productCard'; // Importa la componente ProductCard
+import ProductCard from '../product/productCard/productCard';
 
 const Categories = () => {
   const { categoryName } = useParams();
