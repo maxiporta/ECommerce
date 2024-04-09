@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 // Modelos
 const Producto = require('./models/product/productModel');
@@ -76,30 +77,45 @@ app.post('/productos', upload.single('imagen'), async (req, res) => {
   }
 });
 
-app.put('/productos/:id', async (req, res) => {
-  try {
-    const { nombre, imagen, descripcion, precio, categoria } = req.body;
+const eliminarArchivo = (nombreArchivo) => {
+  fs.unlink(`./uploads/${nombreArchivo}`, (err) => {
+    if (err) {
+      console.error('Error al eliminar el archivo:', err);
+    } else {
+      console.log('Archivo eliminado correctamente');
+    }
+  });
+};
 
+app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
+  try {
+    const { nombre, descripcion, precio, categoria } = req.body;
+    const imagen = req.file ? req.file.filename : null;
     const categoriaExistente = await Categoria.findOne({ nombre: categoria });
     if (!categoriaExistente) {
       return res.status(400).json({ error: 'CATEGORIA NO ENCONTRADA' });
     }
-
     const productoModificado = await Producto.findOneAndUpdate(
       { _id: req.params.id },
       { nombre, imagen, descripcion, precio, categoria: categoriaExistente._id },
       { new: true }
     );
+    // Si se modificó la imagen, eliminar la imagen anterior
+    if (productoModificado.imagen !== imagen) {
+      eliminarArchivo(productoModificado.imagen);
+    }
     res.json(productoModificado);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
+
 app.delete('/productos/:id', async (req, res) => {
   try {
     const productoEliminado = await Producto.findByIdAndDelete(req.params.id);
     if (productoEliminado) {
+      eliminarArchivo(productoEliminado.imagen);
       res.json({ mensaje: 'Producto eliminado correctamente' });
     } else {
       res.status(404).json({ mensaje: 'Producto no encontrado' });
