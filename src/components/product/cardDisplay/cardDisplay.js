@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { Carousel } from 'react-bootstrap';
+import axios from 'axios';
 import ProductCard from '../productCard/productCard';
 
 const CardDisplay = () => {
@@ -8,13 +8,16 @@ const CardDisplay = () => {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/productos')
-      .then(response => {
+    const getProductosDestacados = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/productos-destacados');
         setProductos(response.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    getProductosDestacados();
   }, []);
 
   const handleSelect = (selectedIndex, e) => {
@@ -31,36 +34,26 @@ const CardDisplay = () => {
         indicators={true}
         interval={null} // Set interval to null to allow manual control
         className="custom-carousel"
+        wrap={true}
       >
-        <Carousel.Item>
-          <div className="d-flex justify-content-center">
-            {productos.slice(0, 3).map((producto, i) => (
-              <ProductCard
-                key={i}
-                producto={producto}
-                showPriceOnHover
-                enlargeOnHover
-                isCenter={i === index % 3}
-              />
-            ))}
-          </div>
-        </Carousel.Item>
-        <Carousel.Item>
-          <div className="d-flex justify-content-center">
-            {productos.slice(3, 6).map((producto, i) => (
-              <ProductCard
-                key={i}
-                producto={producto}
-                showPriceOnHover
-                enlargeOnHover
-                isCenter={i === index % 3}
-              />
-            ))}
-          </div>
-        </Carousel.Item>
+        {[0, 1, 2].map((i) => (
+          <Carousel.Item key={i}>
+            <div className="d-flex justify-content-center">
+              {productos.slice(i * 3, i * 3 + 3).map((producto, j) => (
+                <ProductCard
+                  key={j}
+                  producto={producto}
+                  showPriceOnHover
+                  enlargeOnHover
+                  isCenter={j === 1} // Center the middle item
+                />
+              ))}
+            </div>
+          </Carousel.Item>
+        ))}
       </Carousel>
     </div>
   );
-}
+};
 
 export default CardDisplay;

@@ -1,6 +1,5 @@
 import React from 'react';
 import './footer.css';
-//Icons
 import whatsappIcon from '../../assets/socialMediaImg/whatsapp.png';
 import instagramIcon from '../../assets/socialMediaImg/instagram.png';
 import facebookIcon from '../../assets/socialMediaImg/facebook.png';

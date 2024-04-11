@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import ProductCard from '../product/productCard/productCard';
+import './categories.css';
 
 const Categories = () => {
   const { categoryName } = useParams();
@@ -41,7 +42,7 @@ const Categories = () => {
       <h2>Productos de la categoría {categoryName}</h2>
       <div className="products">
         {filteredProducts.map((product) => (
-          <ProductCard key={product._id} producto={product} />
+          <ProductCard key={product._id} producto={product} showPriceOnHover={true} />
         ))}
       </div>
     </div>

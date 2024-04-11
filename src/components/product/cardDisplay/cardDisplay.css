@@ -1,6 +1,5 @@
-/* Add the following styles to center the carousel */
 .custom-carousel {
-  margin-bottom: 50px; /* Adjust as needed to center the carousel */
+  margin-bottom: 50px;
 }
 
 .carousel-inner {
@@ -9,16 +8,14 @@
   justify-content: center;
 }
 
-/* Add the following styles to adjust the width of the carousel items */
 .carousel-item {
-  width: 100%; /* Adjust the width of each carousel item */
+  width: 100%;
 }
 
 .product-card {
-  margin: 0 10px; /* Adjust the margin between carousel items */
+  margin: 0 10px;
 }
 
-/* Optional: Adjust the width of the product card for a better fit */
 .product-card {
-  width: 250px; /* Adjust as needed */
+  width: 250px;
 }

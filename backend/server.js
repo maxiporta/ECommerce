@@ -59,7 +59,7 @@ app.get('/product/:id', async (req, res) => {
 
 app.post('/productos', upload.single('imagen'), async (req, res) => {
   try {
-    const { nombre, descripcion, precio, categoria } = req.body;
+    const { nombre, descripcion, precio, categoria, destacado } = req.body;
     const imagen = req.file ? req.file.filename : null;
 
     
@@ -68,7 +68,7 @@ app.post('/productos', upload.single('imagen'), async (req, res) => {
       return res.status(400).json({ error: 'CATEGORIA NO ENCONTRADA' });
     }
 
-    const nuevoProducto = new Producto({ nombre, imagen, descripcion, precio, categoria: categoriaExiste._id });
+    const nuevoProducto = new Producto({ nombre, imagen, descripcion, precio, categoria: categoriaExiste._id, destacado });
     await nuevoProducto.save();
 
     res.status(201).json(nuevoProducto);
@@ -89,7 +89,7 @@ const eliminarArchivo = (nombreArchivo) => {
 
 app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
   try {
-    const { nombre, descripcion, precio, categoria } = req.body;
+    const { nombre, descripcion, precio, categoria, destacado } = req.body;
     const imagen = req.file ? req.file.filename : null;
     const categoriaExistente = await Categoria.findOne({ nombre: categoria });
     if (!categoriaExistente) {
@@ -97,13 +97,9 @@ app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
     }
     const productoModificado = await Producto.findOneAndUpdate(
       { _id: req.params.id },
-      { nombre, imagen, descripcion, precio, categoria: categoriaExistente._id },
+      { nombre, imagen, descripcion, precio, categoria: categoriaExistente._id, destacado },
       { new: true }
     );
-    // Si se modificó la imagen, eliminar la imagen anterior
-    if (productoModificado.imagen !== imagen) {
-      eliminarArchivo(productoModificado.imagen);
-    }
     res.json(productoModificado);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -124,6 +120,16 @@ app.delete('/productos/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.get('/productos-destacados', async (req, res) => {
+  try {
+    const productosDestacados = await Producto.find({ destacado: true });
+    res.json(productosDestacados);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 // Categorias
 app.post('/categorias', async (req, res) => {
