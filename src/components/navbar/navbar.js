@@ -2,22 +2,28 @@ import React, { useState, useEffect } from 'react';
 import './navbar.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useCart } from '../cart/cartContext';
 
 const Navbar = () => {
   const [categories, setCategories] = useState([]);
+  const { getCart } = useCart();
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get('http://localhost:5000/categorias');
         setCategories(response.data);
-    } catch (error) {
+      } catch (error) {
         console.error('Error fetching categories:', error);
-    }
-};
+      }
+    };
 
-fetchCategories();
-}, []);
+    fetchCategories();
+  }, []);
+
+  const cart = getCart();
+  const countProducts = cart.reduce((total, item) => total + item.quantity, 0);
+  const showBadge = countProducts > 0;
 
   return (
     <nav className="navbar navbar-expand-lg bg-light sticky-top">
@@ -50,7 +56,7 @@ fetchCategories();
               ))}
             </NavItemDropdown>
           </ul>
-          <CartIcon />
+          <CartIcon countProducts={countProducts} showBadge={showBadge} />
         </div>
       </div>
     </nav>
@@ -82,12 +88,13 @@ const DropdownItem = ({ label, categoryName }) => (
   </li>
 );
 
-const CartIcon = () => {
+const CartIcon = ({ countProducts, showBadge }) => {
   const cartIconPath = process.env.PUBLIC_URL + '/cart-icon.png';
 
   return (
-    <Link to="/cart" label="cart">
+    <Link to="/cart" label="cart" className="cart-icon-container">
       <img src={cartIconPath} alt="Cart Icon" className="cart-icon" />
+      {showBadge && <div className="cart-badge">{countProducts}</div>}
     </Link>
   );
 };
