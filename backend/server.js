@@ -92,40 +92,47 @@ app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
     const { nombre, descripcion, precio, categoria, destacado } = req.body;
     const imagen = req.file ? req.file.filename : null;
 
-    const existingProduct = await Producto.findById(req.params.id);
-    if (!existingProduct) {
-      return res.status(404).json({ error: 'PRODUCTO NO ENCONTRADO' });
-    }
+    // Objeto con los campos que se desean actualizar
+    const updatedFields = {
+      nombre: nombre.trim(),
+      descripcion: descripcion.trim(),
+      precio: precio.trim(),
+      destacado: destacado.trim(),
+    };
 
-    let updatedCategoria = null;
-    if (categoria !== '') {
-      const categoriaExistente = await Categoria.findOne({ nombre: categoria });
-      if (!categoriaExistente) {
-        return res.status(400).json({ error: 'CATEGORIA NO ENCONTRADA' });
+    // Filtrar los campos que no son string vacíos
+    const filteredFields = Object.entries(updatedFields).reduce((acc, [key, value]) => {
+      if (value !== '') {
+        acc[key] = value;
       }
-      updatedCategoria = categoriaExistente._id;
-    } else {
-      updatedCategoria = existingProduct.categoria;
+      return acc;
+    }, {});
+
+    // Verificar si se envió una nueva imagen
+    if (imagen) {
+      filteredFields.imagen = imagen;
     }
 
-    const updatedFields = {};
-    if (nombre !== '') updatedFields.nombre = nombre;
-    if (descripcion !== '') updatedFields.descripcion = descripcion;
-    if (precio !== '') updatedFields.precio = precio;
-    if (updatedCategoria) updatedFields.categoria = updatedCategoria;
-    if (destacado !== '') updatedFields.destacado = destacado;
-    if (imagen) updatedFields.imagen = imagen;
+    // Verificar si se actualizó la categoría
+    if (categoria.trim() !== '') {
+      const categoriaExistente = await Categoria.findOne({ nombre: categoria });
+      if (categoriaExistente) {
+        filteredFields.categoria = categoriaExistente._id;
+      }
+    }
 
     const productoModificado = await Producto.findOneAndUpdate(
       { _id: req.params.id },
-      updatedFields,
+      { $set: filteredFields },
       { new: true }
     );
+
     res.json(productoModificado);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 
