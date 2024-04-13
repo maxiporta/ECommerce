@@ -22,9 +22,9 @@ export default function Cart() {
             {cart.map((item) => (
               <div key={item._id} className="cart-item">
                 <h3>{item.nombre}</h3>
-                <p>Price: ${item.precio}</p>
-                <p>Quantity: {item.quantity}</p>
-                <button onClick={() => handleRemoveItem(item._id)}>Remove</button>
+                <p>Precio: ${item.precio}</p>
+                <p>Cantidad: {item.quantity}</p>
+                <button onClick={() => handleRemoveItem(item._id)}>Eliminar</button>
               </div>
             ))}
           </div>
@@ -32,10 +32,10 @@ export default function Cart() {
             <p>Total: ${getTotalPrice()}</p>
           </div>
           <div className="cart-buttons">
-            <button onClick={() => clearCart()}>Clear Cart</button>
+            <button onClick={() => clearCart()}>Vaciar Carrito</button>
           </div>
           <div>
-            <button>Go to Payment Methods</button>
+            <button>Proceder al pago</button>
           </div>
         </>
       )}

@@ -91,13 +91,34 @@ app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
   try {
     const { nombre, descripcion, precio, categoria, destacado } = req.body;
     const imagen = req.file ? req.file.filename : null;
-    const categoriaExistente = await Categoria.findOne({ nombre: categoria });
-    if (!categoriaExistente) {
-      return res.status(400).json({ error: 'CATEGORIA NO ENCONTRADA' });
+
+    const existingProduct = await Producto.findById(req.params.id);
+    if (!existingProduct) {
+      return res.status(404).json({ error: 'PRODUCTO NO ENCONTRADO' });
     }
+
+    let updatedCategoria = null;
+    if (categoria !== '') {
+      const categoriaExistente = await Categoria.findOne({ nombre: categoria });
+      if (!categoriaExistente) {
+        return res.status(400).json({ error: 'CATEGORIA NO ENCONTRADA' });
+      }
+      updatedCategoria = categoriaExistente._id;
+    } else {
+      updatedCategoria = existingProduct.categoria;
+    }
+
+    const updatedFields = {};
+    if (nombre !== '') updatedFields.nombre = nombre;
+    if (descripcion !== '') updatedFields.descripcion = descripcion;
+    if (precio !== '') updatedFields.precio = precio;
+    if (updatedCategoria) updatedFields.categoria = updatedCategoria;
+    if (destacado !== '') updatedFields.destacado = destacado;
+    if (imagen) updatedFields.imagen = imagen;
+
     const productoModificado = await Producto.findOneAndUpdate(
       { _id: req.params.id },
-      { nombre, imagen, descripcion, precio, categoria: categoriaExistente._id, destacado },
+      updatedFields,
       { new: true }
     );
     res.json(productoModificado);
@@ -105,6 +126,8 @@ app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
 
 
 app.delete('/productos/:id', async (req, res) => {
