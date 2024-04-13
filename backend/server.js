@@ -92,7 +92,6 @@ app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
     const { nombre, descripcion, precio, categoria, destacado } = req.body;
     const imagen = req.file ? req.file.filename : null;
 
-    // Objeto con los campos que se desean actualizar
     const updatedFields = {
       nombre: nombre.trim(),
       descripcion: descripcion.trim(),
@@ -100,7 +99,6 @@ app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
       destacado: destacado.trim(),
     };
 
-    // Filtrar los campos que no son string vacíos
     const filteredFields = Object.entries(updatedFields).reduce((acc, [key, value]) => {
       if (value !== '') {
         acc[key] = value;
@@ -108,12 +106,10 @@ app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
       return acc;
     }, {});
 
-    // Verificar si se envió una nueva imagen
     if (imagen) {
       filteredFields.imagen = imagen;
     }
 
-    // Verificar si se actualizó la categoría
     if (categoria.trim() !== '') {
       const categoriaExistente = await Categoria.findOne({ nombre: categoria });
       if (categoriaExistente) {

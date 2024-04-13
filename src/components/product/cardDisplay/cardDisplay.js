@@ -24,6 +24,16 @@ const CardDisplay = () => {
     setIndex(selectedIndex);
   };
 
+  // Agrupar los productos en grupos de 3
+  const groupedProducts = productos.reduce((acc, product, index) => {
+    const groupIndex = Math.floor(index / 3);
+    if (!acc[groupIndex]) {
+      acc[groupIndex] = [];
+    }
+    acc[groupIndex].push(product);
+    return acc;
+  }, []);
+
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Productos</h1>
@@ -36,16 +46,15 @@ const CardDisplay = () => {
         className="custom-carousel"
         wrap={true}
       >
-        {[0, 1, 2].map((i) => (
-          <Carousel.Item key={i}>
+        {groupedProducts.map((group, groupIndex) => (
+          <Carousel.Item key={groupIndex}>
             <div className="d-flex justify-content-center">
-              {productos.slice(i * 3, i * 3 + 3).map((producto, j) => (
+              {group.map((producto, index) => (
                 <ProductCard
-                  key={j}
+                  key={index}
                   producto={producto}
                   showPriceOnHover
                   enlargeOnHover
-                  isCenter={j === 1} // Center the middle item
                 />
               ))}
             </div>

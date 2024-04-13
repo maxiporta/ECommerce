@@ -30,7 +30,7 @@ const Contact = () => {
       <h2>Contacto</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="name">Nombre</label>
           <input
             type="text"
             id="name"
