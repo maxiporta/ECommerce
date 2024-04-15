@@ -30,7 +30,7 @@ const Navbar = () => {
       <div className="container-fluid">
         <Link to="/">
           <img
-            src={process.env.PUBLIC_URL + '/random-logo.png'}
+            src={process.env.PUBLIC_URL + '/favicon.png'}
             alt="Navbar Logo"
             className="navbar-logo"
           />
@@ -49,7 +49,6 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 justify-content-between">
             <NavItem to="/" label="Home" />
-            <NavItem to="/contact" label="Contacto" />
             <NavItemDropdown label="Categorias">
               {categories.map((category) => (
                 <DropdownItem key={category._id} label={category.nombre} categoryName={category.nombre} />

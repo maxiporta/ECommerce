@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import './contact.css';
+import axios from 'axios';
+import './commentaryForm.css';
 
-const Contact = () => {
+const CommentaryForm = ({id}) => {
   const [formData, setFormData] = useState({
-    name: '',
+    nombre: '',
     email: '',
-    message: '',
+    mensaje: '',
   });
 
   const handleChange = (e) => {
@@ -15,27 +16,32 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    setFormData({
-      name: '',
-      email: '',
-      message: '',
-    });
-  };
+    try {
+      const response = await axios.post(`http://localhost:5000/comentarios/${id}`, formData);
+      console.log('Comentario enviado:', response.data);
+      setFormData({
+        nombre: '',
+        email: '',
+        mensaje: '',
+      });
+    } catch (error) {
+      console.error('Error al enviar comentario:', error);
+    }
+  };  
 
   return (
     <div className="contact-container">
-      <h2>Contacto</h2>
+      <h2>Ingrese su Comentario</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="name">Nombre</label>
           <input
             type="text"
             id="name"
-            name="name"
-            value={formData.name}
+            name="nombre"
+            value={formData.nombre}
             onChange={handleChange}
             required
           />
@@ -57,8 +63,8 @@ const Contact = () => {
           <label htmlFor="message">Mensaje</label>
           <textarea
             id="message"
-            name="message"
-            value={formData.message}
+            name="mensaje"
+            value={formData.mensaje}
             onChange={handleChange}
             className="message-box"
             required
@@ -71,4 +77,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+export default CommentaryForm;

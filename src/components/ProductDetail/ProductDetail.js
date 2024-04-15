@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../cart/cartContext';
 import './productDetail.css';
+import CommentaryForm from '../commentaryForm/comentaryForm';
+import Commentaries from '../commentaries/commentaries';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -31,7 +33,7 @@ const ProductDetail = () => {
   if (!product) {
     return <div>Loading...</div>;
   }
-
+  
   return (
     <div className="product-detail">
       <h2>{product.nombre}</h2>
@@ -39,6 +41,10 @@ const ProductDetail = () => {
       <p>{product.descripcion}</p>
       <p>Precio: ${product.precio}</p>
       <button onClick={handleAddToCart}>Agregar al carrito</button>
+      <div>
+        <Commentaries id={id} />
+        <CommentaryForm id={id} />,
+      </div>
     </div>
   );
 };

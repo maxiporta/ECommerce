@@ -6,7 +6,9 @@ const productoSchema = new mongoose.Schema({
   descripcion: { type: String, required: true },
   categoria : { type: mongoose.Schema.Types.ObjectId, ref: 'Categoria', required: true },
   precio: {type: Number, min: 0},
-  destacado: {type: Boolean, default: false}
+  destacado: {type: Boolean, default: false},
+  comentarios: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comentario' }]
+
 });
 
 const Producto = mongoose.model('Producto', productoSchema);

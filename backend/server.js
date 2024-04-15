@@ -8,6 +8,7 @@ const fs = require('fs');
 // Modelos
 const Producto = require('./models/product/productModel');
 const Categoria = require('./models/categories/categoryModel');
+const Comentario = require('./models/comentaries/comentaryModel');
 
 const app = express();
 
@@ -77,6 +78,7 @@ app.post('/productos', upload.single('imagen'), async (req, res) => {
   }
 });
 
+
 const eliminarArchivo = (nombreArchivo) => {
   fs.unlink(`./uploads/${nombreArchivo}`, (err) => {
     if (err) {
@@ -86,6 +88,7 @@ const eliminarArchivo = (nombreArchivo) => {
     }
   });
 };
+
 
 app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
   try {
@@ -130,9 +133,6 @@ app.put('/productos/:id', upload.single('imagen'), async (req, res) => {
 });
 
 
-
-
-
 app.delete('/productos/:id', async (req, res) => {
   try {
     const productoEliminado = await Producto.findByIdAndDelete(req.params.id);
@@ -146,6 +146,7 @@ app.delete('/productos/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 app.get('/productos-destacados', async (req, res) => {
   try {
@@ -196,6 +197,42 @@ app.delete('/categorias/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+//Comentarios
+app.post('/comentarios/:id', async (req, res) => {
+  try {
+    const { nombre, email, mensaje } = req.body;
+    const { id } = req.params;
+    const nuevoComentario = new Comentario({ nombre, email, mensaje, producto: id });
+    await nuevoComentario.save();
+    res.status(201).json(nuevoComentario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+app.get('/comentarios/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const comentarios = await Comentario.find({ producto: id });
+    res.json(comentarios);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+app.delete('/comentarios/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Comentario.findByIdAndDelete({ producto: id });
+    res.json({ mensaje: 'Comentario eliminado correctamente' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 // Iniciar el servidor
 const puerto = 5000;
