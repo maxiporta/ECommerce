@@ -7,6 +7,7 @@ import Cart from './components/cart/cart';
 import ProductDetail from './components/ProductDetail/ProductDetail.js';
 import Categories from './components/categories/categories.js';
 import { CartProvider } from './components/cart/cartContext.js';
+import Creator from './components/creator/creator.js';
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
           <Navbar />
           <Routes>
             <Route path="/" element={<CardDisplay />} />
+            <Route path="/creator" element={<Creator />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/categoria/:categoryName" element={<Categories />} />

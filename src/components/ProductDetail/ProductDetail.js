@@ -43,7 +43,7 @@ const ProductDetail = () => {
       <button onClick={handleAddToCart}>Agregar al carrito</button>
       <div>
         <Commentaries id={id} />
-        <CommentaryForm id={id} />,
+        <CommentaryForm id={id} />
       </div>
     </div>
   );

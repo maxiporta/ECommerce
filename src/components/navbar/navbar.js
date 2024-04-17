@@ -49,6 +49,7 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 justify-content-between">
             <NavItem to="/" label="Home" />
+            <NavItem to="/creator" label="Añadir"/>
             <NavItemDropdown label="Categorias">
               {categories.map((category) => (
                 <DropdownItem key={category._id} label={category.nombre} categoryName={category.nombre} />

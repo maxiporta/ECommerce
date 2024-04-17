@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useCart } from './cartContext';
 import './cart.css';
 
@@ -35,7 +36,9 @@ export default function Cart() {
             <button onClick={() => clearCart()}>Vaciar Carrito</button>
           </div>
           <div>
-            <button>Proceder al pago</button>
+            <Link to="/checkout">
+              <button>Proceder al pago</button>
+            </Link>
           </div>
         </>
       )}
