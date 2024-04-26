@@ -4,6 +4,8 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
+const socketIo = require('socket.io');
 
 // Modelos
 const Producto = require('./models/product/productModel');
@@ -11,6 +13,8 @@ const Categoria = require('./models/categories/categoryModel');
 const Comentario = require('./models/comentaries/comentaryModel');
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 
 app.use(express.json())
 app.use(cors());
@@ -33,6 +37,18 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+
+// Socket.IO
+io.on('connection', (socket) => {
+  console.log('Usuario conectado');
+
+  // Maneja la desconexión del cliente
+  socket.on('disconnect', () => {
+    console.log('Usuario desconectado');
+  });
+});
+
 
 // Productos
 app.get('/productos', async (req, res) => {
@@ -164,6 +180,7 @@ app.post('/categorias', async (req, res) => {
     const { nombre } = req.body;
     const nuevaCategoria = new Categoria({ nombre });
     await nuevaCategoria.save();
+    io.emit('nuevaCategoria', nuevaCategoria);
     res.status(201).json(nuevaCategoria);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -205,6 +222,7 @@ app.post('/comentarios/:id', async (req, res) => {
     const { id } = req.params;
     const nuevoComentario = new Comentario({ nombre, email, mensaje, producto: id });
     await nuevoComentario.save();
+    io.emit('nuevoComentario', nuevoComentario);
     res.status(201).json(nuevoComentario);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -227,6 +245,7 @@ app.delete('/comentarios/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await Comentario.findByIdAndDelete({ producto: id });
+    io.emit('eliminarComentario', id);
     res.json({ mensaje: 'Comentario eliminado correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -234,8 +253,9 @@ app.delete('/comentarios/:id', async (req, res) => {
 });
 
 
+
 // Iniciar el servidor
 const puerto = 5000;
-app.listen(puerto, () => {
+server.listen(puerto, () => {
   console.log(`Servidor en ejecución en el puerto ${puerto}`);
 });

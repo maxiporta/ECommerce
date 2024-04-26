@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import socketIOClient from 'socket.io-client';
 import './creator.css';
+
+const ENDPOINT = 'http://localhost:5000';
+const socket = socketIOClient(ENDPOINT);
 
 const Creator = () => {
   const [categoria, setCategoria] = useState('');
-  const [categoriaProducto, setCategoriaProducto] = useState([]);
+  const [categoriaProducto, setCategoriaProducto] = useState('');
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState([]);
   const [nombreProducto, setNombreProducto] = useState('');
   const [descripcionProducto, setDescripcionProducto] = useState('');
@@ -15,16 +19,23 @@ const Creator = () => {
   useEffect(() => {
     const obtenerCategorias = async () => {
       try {
-        const response = await fetch('http://localhost:5000/categorias');
-        const data = await response.json();
-        setCategoriaSeleccionada(data);
+        const response = await axios.get('http://localhost:5000/categorias');
+        setCategoriaSeleccionada(response.data);
       } catch (error) {
         console.error('Error al obtener las categorías:', error);
       }
     };
 
     obtenerCategorias();
-  }, []);
+
+    socket.on('nuevaCategoria', (nuevaCategoria) => {
+      setCategoriaSeleccionada([...categoriaSeleccionada, nuevaCategoria]);
+    });
+
+    return () => {
+      socket.off('nuevaCategoria');
+    };
+  }, [categoriaSeleccionada]);
 
   const handleCategoriaChange = (event) => {
     setCategoria(event.target.value);
@@ -75,7 +86,7 @@ const Creator = () => {
     formData.append('categoria', categoriaProducto);
     formData.append('destacado', destacado);
     formData.append('imagen', imagenProducto);
-  
+
     try {
       await axios.post('http://localhost:5000/productos', formData, {
         headers: {
@@ -94,12 +105,11 @@ const Creator = () => {
       console.error(error);
     }
   };
-  
 
   return (
     <div className="creator-container">
       <div className="card">
-      <h2>Crear Categoría</h2>
+        <h2>Crear Categoría</h2>
         <form onSubmit={handleSubmitCategoria}>
           <input type="text" value={categoria} onChange={handleCategoriaChange} placeholder="Nombre de la categoría" />
           <button type="submit">Crear Categoría</button>
@@ -115,7 +125,7 @@ const Creator = () => {
           <select value={categoriaProducto} onChange={handleCategoriaProductoChange}>
             <option value="">Selecciona una categoría</option>
             {categoriaSeleccionada.map((cat) => (
-                <option key={cat._id} value={cat.nombre}>{cat.nombre}</option>
+              <option key={cat._id} value={cat.nombre}>{cat.nombre}</option>
             ))}
           </select>
           <input type="file" onChange={handleImagenProductoChange} />
