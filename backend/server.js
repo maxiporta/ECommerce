@@ -6,15 +6,24 @@ const path = require('path');
 const fs = require('fs');
 const http = require('http');
 const socketIo = require('socket.io');
+const mercadopago = require('mercadopago');
 
 // Modelos
 const Producto = require('./models/product/productModel');
 const Categoria = require('./models/categories/categoryModel');
 const Comentario = require('./models/comentaries/comentaryModel');
 
+//Mercadopago
+const MercadoPagoConfig = mercadopago.MercadoPagoConfig;
+const Preference = mercadopago.Preference;
+const client = new MercadoPagoConfig({
+  accessToken: "TEST-7565177115186163-041523-58726ec02a014bb59e59a05576d4f42e-213077465"
+});
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+const puerto = 5000;
 
 app.use(express.json())
 app.use(cors());
@@ -43,11 +52,45 @@ const upload = multer({ storage: storage });
 io.on('connection', (socket) => {
   console.log('Usuario conectado');
 
-  // Maneja la desconexión del cliente
   socket.on('disconnect', () => {
     console.log('Usuario desconectado');
   });
 });
+
+
+//Checkout
+app.post("/create_preference", async(req, res) => {
+  try {
+    const items = req.body.items.map(item => ({
+      title: item.title,
+      quantity: Number(item.quantity),
+      unit_price: Number(item.price),
+      currency_id: "ARS"
+    }));
+
+    const body = {
+      items,
+      back_urls: {
+        success: "http://localhost:3000/",
+        failure: "http://localhost:3000/",
+        pending: "http://localhost:3000/"
+      },
+      auto_return: "approved"
+    };
+
+    const preference = new Preference(client);
+    const result = await preference.create({ body });
+    res.json({
+      id: result.id
+    });
+  } catch(error) {
+    console.log(error);
+    res.status(500).json({
+      error: "Error al crear la preferencia"
+    });
+  }
+});
+
 
 
 // Productos
@@ -255,7 +298,6 @@ app.delete('/comentarios/:id', async (req, res) => {
 
 
 // Iniciar el servidor
-const puerto = 5000;
 server.listen(puerto, () => {
   console.log(`Servidor en ejecución en el puerto ${puerto}`);
 });
